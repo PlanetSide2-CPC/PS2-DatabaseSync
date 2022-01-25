@@ -1,17 +1,15 @@
 import asyncio
 import json
-import logging
+import logging.config
 
 import pymysql
 import websockets
 
-logger = logging.getLogger()
-logfile = 'test.log'
-hdlr = logging.FileHandler('sendlog.txt')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.NOTSET)
+with open("config/logging.json", "r") as logging_config_file:
+    logging_config = json.load(logging_config_file)
+
+logging.config.dictConfig(logging_config)
+develop_logger = logging.getLogger("develop")
 
 
 class Mysql(object):
@@ -41,8 +39,6 @@ class Mysql(object):
                                  payload["character_loadout_id"], payload["is_headshot"],
                                  payload["world_id"], payload["zone_id"]))
             self.conn.commit()
-
-        print(payload)
 
     async def update_alert_event(self, payload):
         """ 警报数据库更新

@@ -25,15 +25,26 @@ class Mysql(object):
             self.conn = pymysql.connect(host=database["host"], port=database["port"], db=database["database"],
                                         user=database["user"], password=database["password"])
 
-    def update_death_event(self, payload):
+    async def update_death_event(self, payload):
         """击杀数据库更新
 
         :param payload: Websocket 订阅数据，字典类。
         """
         # 数据库更新
+        with self.conn.cursor() as cursor:
+            sql = "INSERT INTO ps2_death (attacker_character_id, attacker_fire_mode_id, attacker_loadout_id, " \
+                  "attacker_vehicle_id, attacker_weapon_id, character_id, character_loadout_id, is_headshot, " \
+                  "world_id, zone_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (payload["attacker_character_id"], payload["attacker_fire_mode_id"],
+                                 payload["attacker_loadout_id"], payload["attacker_vehicle_id"],
+                                 payload["attacker_weapon_id"], payload["character_id"],
+                                 payload["character_loadout_id"], payload["is_headshot"],
+                                 payload["world_id"], payload["zone_id"]))
+            self.conn.commit()
+
         print(payload)
 
-    def update_alert_event(self, payload):
+    async def update_alert_event(self, payload):
         """ 警报数据库更新
 
         :param payload: Websocket 订阅数据，字典类。
@@ -46,11 +57,11 @@ async def connect_websocket():
     # Websocket API 订阅内容，http://census.daybreakgames.com/
     ps_api = "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:yinxue"
     subscribe = '{"service":"event","action":"subscribe","characters":["all"],"eventNames":["Death", ' \
-                '"MetagameEvent"],"worlds":["40"],"logicalAndCharactersWithWorlds":true} '
+                '"MetagameEvent"],"worlds":["1", "10", "13", "17", "40"],"logicalAndCharactersWithWorlds":true} '
     # 连接数据库
     mysql = Mysql()
 
-    async with websockets.connect(ps_api) as websocket:
+    async with websockets.connect(ps_api, ping_timeout=None) as websocket:
         await websocket.send(subscribe)
         print("Pending for message...")
 
@@ -68,10 +79,10 @@ async def connect_websocket():
             payload: dict = data["payload"]
 
             if payload.get("event_name") == "Death":
-                mysql.update_death_event(payload)
+                await mysql.update_death_event(payload)
 
-            if payload.get("event_name") == "MetagameEvent":
-                mysql.update_alert_event(payload)
+            elif payload.get("event_name") == "MetagameEvent":
+                await mysql.update_alert_event(payload)
 
 
 if __name__ == '__main__':

@@ -6,26 +6,36 @@
   },
   "loggers": {
     "develop": {
-      "level": "NOTSET",
+      "level": "DEBUG",
       "handlers": [
         "monitor"
       ],
       "propagate": "no"
     },
     "production": {
+      "level": "INFO",
       "handlers": [
-        "monitor"
-      ]
+        "monitor",
+        "runtime"
+      ],
+      "propagate": "no"
     }
   },
   "handlers": {
     "monitor": {
       "class": "logging.StreamHandler",
       "formatter": "default",
-      "level": "NOTSET",
+      "level": "DEBUG",
       "stream": "ext://sys.stdout"
     },
-    "runtime"
+    "runtime": {
+      "class": "logging.handlers.TimedRotatingFileHandler",
+      "formatter": "default",
+      "level": "INFO",
+      "filename": "log/runtime.log",
+      "when": "midnight",
+      "backupCount": "3"
+    }
   },
   "formatters": {
     "default": {

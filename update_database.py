@@ -69,10 +69,8 @@ async def connect_websocket():
             message = await websocket.recv()
             data: dict = json.loads(message)
 
-            def is_subscribe_event():
-                return True and data.get("service") == "event" and data.get("type") == "serviceMessage"
-
-            if not is_subscribe_event():
+            # 是否为订阅事件
+            if not (True and data.get("service") == "event" and data.get("type") == "serviceMessage"):
                 continue
 
             # 判断事件选择数据库操作
@@ -86,4 +84,12 @@ async def connect_websocket():
 
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(connect_websocket())
+    while True:
+        try:
+            asyncio.run(connect_websocket())
+
+        except KeyboardInterrupt:
+            break
+
+        except websockets.WebSocketException:
+            continue

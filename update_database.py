@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging.config
 import logging.handlers
+import os
 
 import pymysql
 import websockets
@@ -110,6 +111,13 @@ class SynchronizeSubscribe(object):
 
 
 if __name__ == '__main__':
+    current_file_path = os.path.dirname(__file__)
+    os.chdir(current_file_path)
+
+    log_folder = "log"
+    if not os.path.exists(log_folder):
+        os.makedirs(log_folder)
+
     # 从文件中读取日志配置
     with open("config/logging.json", "r") as logging_config_file:
         logging_config = json.load(logging_config_file)

@@ -70,13 +70,13 @@ class SynchronizeSubscribe(object):
                 data: dict = json.loads(message)
 
                 # 是否为订阅事件
-                if not await self.is_subscribe_event(data):
+                if not self.is_subscribe_event(data):
                     continue
 
                 await self.match_event_name(data)
 
     @staticmethod
-    async def is_subscribe_event(data):
+    def is_subscribe_event(data):
         return True and data.get("service") == "event" and data.get("type") == "serviceMessage"
 
     async def match_event_name(self, data):

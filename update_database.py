@@ -19,7 +19,16 @@ class Mysql(object):
         self.conn = pymysql.connect(host=database["host"], port=database["port"], db=database["database"],
                                     user=database["user"], password=database["password"])
 
-    async def update_death_event_in_background(self, payload):
+    async def update_event_in_background(self, payload):
+        pass
+
+
+class DeathEventHandler(Mysql):
+    """死亡事件
+
+    """
+
+    async def update_event_in_background(self, payload):
         """击杀数据库更新
 
         :param payload: Websocket 订阅数据，字典类。
@@ -37,8 +46,14 @@ class Mysql(object):
 
         develop_logger.debug(f"UPDATE {payload}")
 
-    async def update_alert_event_in_background(self, payload):
-        """ 警报数据库更新
+
+class AlertEventHandler(Mysql):
+    """警报事件
+
+    """
+
+    async def update_event_in_background(self, payload):
+        """警报数据库更新
 
         :param payload: Websocket 订阅数据，字典类。
         """
@@ -46,7 +61,7 @@ class Mysql(object):
 
 
 class SynchronizeSubscribe(object):
-    """ 同步订阅事件至数据库，使用 Websockets
+    """同步订阅事件至数据库，使用 Websockets
 
     """
 
@@ -56,10 +71,11 @@ class SynchronizeSubscribe(object):
         self.subscribe = '{"service":"event","action":"subscribe","characters":["all"],"eventNames":["Death", ' \
                          '"MetagameEvent"],"worlds":["1", "10", "13", "17", "40"],' \
                          '"logicalAndCharactersWithWorlds":true} '
-        self.mysql = Mysql()
+        self.death_handler = DeathEventHandler()
+        self.alert_handler = AlertEventHandler()
 
     async def connect_ps_api(self):
-        """ 连接行星边际 API 接口
+        """连接行星边际 API 接口
 
         """
         async with websockets.connect(self.ps_api, ping_timeout=None) as ws:
@@ -80,17 +96,17 @@ class SynchronizeSubscribe(object):
         return True and data.get("service") == "event" and data.get("type") == "serviceMessage"
 
     async def match_event_name(self, data):
-        """ 匹配事件对应的数据库操作
+        """匹配事件对应的数据库操作
 
         :param data: API 返回数据，字典
         """
         payload: dict = data["payload"]
 
         if payload.get("event_name") == "Death":
-            await self.mysql.update_death_event_in_background(payload)
+            await self.death_handler.update_event_in_background(payload)
 
         elif payload.get("event_name") == "MetagameEvent":
-            await self.mysql.update_alert_event_in_background(payload)
+            await self.alert_handler.update_event_in_background(payload)
 
 
 if __name__ == '__main__':

@@ -58,6 +58,14 @@ class AlertEventHandler(Mysql):
 
         :param payload: Websocket 订阅数据，字典类。
         """
+        with self.conn.cursor() as cursor:
+            sql = "INSERT INTO ps2_jingbao (faction_vs, faction_tr, faction_nc, world_id, zone_id, " \
+                  "metagame_event_id, metagame_event_state) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (payload["faction_vs"], payload["faction_tr"], payload["faction_nc"],
+                                 payload["world_id"], payload["zone_id"], payload["metagame_event_id"],
+                                 payload["metagame_event_state"]))
+            self.conn.commit()
+
         develop_logger.debug(f"UPDATE {payload}")
 
 

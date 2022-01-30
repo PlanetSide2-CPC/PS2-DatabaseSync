@@ -69,11 +69,13 @@ def setup_logging():
     return logging.getLogger()
 
 
+logger = setup_logging()
+
+
 if __name__ == '__main__':
     current_file_path = os.path.dirname(__file__)
     os.chdir(current_file_path)
 
-    logger = setup_logging()
     synchronize = Subscription()
 
     while True:

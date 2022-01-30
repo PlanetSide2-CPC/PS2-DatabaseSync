@@ -61,7 +61,7 @@ class AlertEventHandler(Mysql):
         develop_logger.debug(f"UPDATE {payload}")
 
 
-class SynchronizeSubscribe(object):
+class Subscription(object):
     """同步订阅事件至数据库，使用 Websockets
 
     """
@@ -76,7 +76,7 @@ class SynchronizeSubscribe(object):
         self.alert_handler = AlertEventHandler()
 
     async def connect_ps_api(self):
-        """连接行星边际 API 接口
+        """连接行星边际 API 接口，并调用更新方法同步数据
 
         """
         async with websockets.connect(self.ps_api, ping_timeout=None) as ws:
@@ -86,20 +86,22 @@ class SynchronizeSubscribe(object):
                 message = await ws.recv()
                 data: dict = json.loads(message)
 
-                # 是否为订阅事件
-                if not self.is_subscribe_event(data):
-                    continue
+                await self.sync_data_to_database(data)
 
-                await self.match_event_name(data)
+    async def sync_data_to_database(self, data):
+        """同步数据至数据库
 
-    @staticmethod
-    def is_subscribe_event(data):
-        return True and data.get("service") == "event" and data.get("type") == "serviceMessage"
+        :param data: API 返回数据
+        """
+        is_subscription_event = True and data.get("service") == "event" and data.get("type") == "serviceMessage"
+
+        if is_subscription_event:
+            await self.match_event_name(data)
 
     async def match_event_name(self, data):
         """匹配事件对应的数据库操作
 
-        :param data: API 返回数据，字典
+        :param data: API 返回数据
         """
         payload: dict = data["payload"]
 
@@ -126,7 +128,7 @@ if __name__ == '__main__':
     develop_logger = logging.getLogger("develop")
     production_logger = logging.getLogger("production")
 
-    synchronize = SynchronizeSubscribe()
+    synchronize = Subscription()
 
     while True:
         try:

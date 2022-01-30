@@ -6,15 +6,17 @@ Get game events and sync to database.
 
 ## How to use
 
-1. First you need a `database.json` file in config, for example:
+1. First you need a `config.json` file in config, for example:
 
 ```json
 {
-  "host": "localhost",
-  "port": 3306,
-  "database": "example",
-  "user": "my_account",
-  "password": "your_password"
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "example",
+    "user": "user",
+    "password": "password"
+  }
 }
 ```
 

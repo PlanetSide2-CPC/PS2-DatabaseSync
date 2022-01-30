@@ -44,9 +44,9 @@ class Subscription(object):
         is_subscription_event = True and data.get("service") == "event" and data.get("type") == "serviceMessage"
 
         if is_subscription_event:
-            await self.match_event_name(data)
+            await self.select_event_handler(data)
 
-    async def match_event_name(self, data):
+    async def select_event_handler(self, data):
         """匹配事件对应的数据库操作
 
         :param data: API 返回数据

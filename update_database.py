@@ -28,7 +28,7 @@ class Subscription(object):
 
         """
         async with websockets.connect(self.ps_api, ping_timeout=None) as ws:
-            production_logger.info("Connection established.")
+            logger.info("Connection established.")
             await ws.send(self.subscribe)
             while True:
                 message = await ws.recv()
@@ -60,22 +60,20 @@ class Subscription(object):
             await self.alert_handler.update_event_in_background(payload)
 
 
-if __name__ == '__main__':
-    current_file_path = os.path.dirname(__file__)
-    os.chdir(current_file_path)
-
-    log_folder = "log"
-    if not os.path.exists(log_folder):
-        os.makedirs(log_folder)
-
-    # 从文件中读取日志配置
+def setup_logging():
     with open("config/logging.json", "r") as logging_config_file:
         logging_config = json.load(logging_config_file)
 
     logging.config.dictConfig(logging_config)
-    develop_logger = logging.getLogger("develop")
-    production_logger = logging.getLogger("production")
 
+    return logging.getLogger()
+
+
+if __name__ == '__main__':
+    current_file_path = os.path.dirname(__file__)
+    os.chdir(current_file_path)
+
+    logger = setup_logging()
     synchronize = Subscription()
 
     while True:
@@ -83,9 +81,9 @@ if __name__ == '__main__':
             asyncio.run(synchronize.connect_ps_api())
 
         except KeyboardInterrupt:
-            production_logger.info("The program was closed by the user.")
+            logger.info("The program was closed by the user.")
             break
 
         except websockets.WebSocketException:
-            production_logger.warning("Connection failed, try to reconnect.")
+            logger.warning("Connection failed, try to reconnect.")
             continue

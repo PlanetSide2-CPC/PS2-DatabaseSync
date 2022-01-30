@@ -2,24 +2,11 @@
   "version": 1,
   "disable_existing_loggers": false,
   "root": {
-    "level": "NOTSET"
-  },
-  "loggers": {
-    "develop": {
-      "level": "DEBUG",
-      "handlers": [
-        "monitor"
-      ],
-      "propagate": "no"
-    },
-    "production": {
-      "level": "INFO",
-      "handlers": [
-        "monitor",
-        "runtime"
-      ],
-      "propagate": "no"
-    }
+    "level": "DEBUG",
+    "handlers": [
+      "monitor",
+      "runtime"
+    ]
   },
   "handlers": {
     "monitor": {

@@ -9,8 +9,8 @@ class Mysql(object):
     """
 
     def __init__(self):
-        with open("config/database.json") as config:
-            database = json.load(config)
+        with open("config/config.json") as config:
+            database = json.load(config)["database"]
 
         self.conn = pymysql.connect(host=database["host"], port=database["port"], db=database["database"],
                                     user=database["user"], password=database["password"])

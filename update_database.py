@@ -6,7 +6,7 @@ import os
 
 import websockets
 
-import mysql_controller
+from controller import mysql_controller
 
 
 class Subscription(object):

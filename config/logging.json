@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "root": {
+    "level": "DEBUG",
+    "handlers": [
+      "monitor",
+      "runtime"
+    ]
+  },
+  "handlers": {
+    "monitor": {
+      "class": "logging.StreamHandler",
+      "formatter": "default",
+      "level": "DEBUG",
+      "stream": "ext://sys.stdout"
+    },
+    "runtime": {
+      "class": "logging.handlers.TimedRotatingFileHandler",
+      "formatter": "default",
+      "level": "INFO",
+      "filename": "log/runtime.log",
+      "when": "midnight",
+      "backupCount": "3"
+    }
+  },
+  "formatters": {
+    "default": {
+      "format": "%(asctime)s %(levelname)-8s %(message)s"
+    }
+  }
+}

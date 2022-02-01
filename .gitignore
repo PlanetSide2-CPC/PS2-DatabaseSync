@@ -1,1 +1,3 @@
-/sendlog.txt
+# Ignore log files
+/log/
+/test/

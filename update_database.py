@@ -1,95 +1,91 @@
 import asyncio
 import json
-import logging
+import logging.config
+import logging.handlers
+import os
 
-import pymysql
 import websockets
 
-logger = logging.getLogger()
-logfile = 'test.log'
-hdlr = logging.FileHandler('sendlog.txt')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.NOTSET)
+from controller import mysql_controller
 
 
-class Mysql(object):
-    """数据库相关操作
+class Subscription(object):
+    """同步订阅事件至数据库，使用 Websockets
 
     """
 
     def __init__(self):
-        with open("config/database.json") as config:
-            database = json.load(config)
-            self.conn = pymysql.connect(host=database["host"], port=database["port"], db=database["database"],
-                                        user=database["user"], password=database["password"])
+        # Websocket API 订阅内容，http://census.daybreakgames.com/
+        self.ps_api = "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:yinxue"
+        self.subscribe = '{"service":"event","action":"subscribe","characters":["all"],"eventNames":["Death", ' \
+                         '"MetagameEvent"],"worlds":["1", "10", "13", "17", "40"],' \
+                         '"logicalAndCharactersWithWorlds":true} '
+        self.death_handler = mysql_controller.DeathEventHandler()
+        self.alert_handler = mysql_controller.AlertEventHandler()
 
-    async def update_death_event(self, payload):
-        """击杀数据库更新
+    async def connect_ps_api(self):
+        """连接行星边际 API 接口，并调用更新方法同步数据
 
-        :param payload: Websocket 订阅数据，字典类。
         """
-        # 数据库更新
-        with self.conn.cursor() as cursor:
-            sql = "INSERT INTO ps2_death (attacker_character_id, attacker_fire_mode_id, attacker_loadout_id, " \
-                  "attacker_vehicle_id, attacker_weapon_id, character_id, character_loadout_id, is_headshot, " \
-                  "world_id, zone_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, (payload["attacker_character_id"], payload["attacker_fire_mode_id"],
-                                 payload["attacker_loadout_id"], payload["attacker_vehicle_id"],
-                                 payload["attacker_weapon_id"], payload["character_id"],
-                                 payload["character_loadout_id"], payload["is_headshot"],
-                                 payload["world_id"], payload["zone_id"]))
-            self.conn.commit()
+        async with websockets.connect(self.ps_api, ping_timeout=None) as ws:
+            logger.info("Connection established.")
+            await ws.send(self.subscribe)
+            while True:
+                message = await ws.recv()
+                data: dict = json.loads(message)
 
-        print(payload)
+                await self.sync_data_to_database(data)
 
-    async def update_alert_event(self, payload):
-        """ 警报数据库更新
+    async def sync_data_to_database(self, data):
+        """同步数据至数据库
 
-        :param payload: Websocket 订阅数据，字典类。
+        :param data: API 返回数据
         """
-        # 数据库更新
-        print(payload)
+        is_subscription_event = True and data.get("service") == "event" and data.get("type") == "serviceMessage"
+
+        if is_subscription_event:
+            await self.select_event_handler(data)
+
+    async def select_event_handler(self, data):
+        """匹配事件对应的数据库操作
+
+        :param data: API 返回数据
+        """
+        payload: dict = data["payload"]
+
+        if payload.get("event_name") == "Death":
+            await self.death_handler.update_event_in_background(payload)
+
+        elif payload.get("event_name") == "MetagameEvent":
+            await self.alert_handler.update_event_in_background(payload)
 
 
-async def connect_websocket():
-    # Websocket API 订阅内容，http://census.daybreakgames.com/
-    ps_api = "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:yinxue"
-    subscribe = '{"service":"event","action":"subscribe","characters":["all"],"eventNames":["Death", ' \
-                '"MetagameEvent"],"worlds":["1", "10", "13", "17", "40"],"logicalAndCharactersWithWorlds":true} '
-    # 连接数据库
-    mysql = Mysql()
+def setup_logging():
+    with open("config/logging.json", "r") as logging_config_file:
+        logging_config = json.load(logging_config_file)
 
-    async with websockets.connect(ps_api, ping_timeout=None) as websocket:
-        await websocket.send(subscribe)
-        print("Pending for message...")
+    logging.config.dictConfig(logging_config)
 
-        while True:
-            message = await websocket.recv()
-            data: dict = json.loads(message)
+    return logging.getLogger()
 
-            # 是否为订阅事件
-            if not (True and data.get("service") == "event" and data.get("type") == "serviceMessage"):
-                continue
 
-            # 判断事件选择数据库操作
-            payload: dict = data["payload"]
-
-            if payload.get("event_name") == "Death":
-                await mysql.update_death_event(payload)
-
-            elif payload.get("event_name") == "MetagameEvent":
-                await mysql.update_alert_event(payload)
+logger = setup_logging()
 
 
 if __name__ == '__main__':
+    current_file_path = os.path.dirname(__file__)
+    os.chdir(current_file_path)
+
+    synchronize = Subscription()
+
     while True:
         try:
-            asyncio.run(connect_websocket())
+            asyncio.run(synchronize.connect_ps_api())
 
         except KeyboardInterrupt:
+            logger.info("The program was closed by the user.")
             break
 
         except websockets.WebSocketException:
+            logger.warning("Connection failed, try to reconnect.")
             continue

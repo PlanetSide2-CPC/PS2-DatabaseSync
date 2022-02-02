@@ -4,5 +4,5 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-with open("ps2cpcdata/config/config.json", "r") as config:
+with open("ps2cpcdata/config/config.json", mode="r", encoding="utf8") as config:
     __config__ = json.load(config)

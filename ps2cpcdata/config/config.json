@@ -1,0 +1,13 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "example",
+    "user": "user",
+    "password": "password"
+  },
+  "planetside2": {
+    "api": "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:yinxue",
+    "subscription": "{\"service\":\"event\",\"action\":\"subscribe\",\"characters\":[\"all\"],\"eventNames\":[\"Death\", \"MetagameEvent\"],\"worlds\":[\"1\", \"10\", \"13\", \"17\", \"40\"], \"logicalAndCharactersWithWorlds\":true}"
+  }
+}

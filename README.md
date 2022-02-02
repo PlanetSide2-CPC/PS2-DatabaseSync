@@ -16,6 +16,10 @@ Get game events and sync to database.
     "database": "example",
     "user": "user",
     "password": "password"
+  },
+  "planetside2": {
+    "api": "wss://push.planetside2.com/streaming?environment=ps2&service-id=s: ...",
+    "subscription": "{\"service\":\"event\", ... , \"logicalAndCharactersWithWorlds\":true}"
   }
 }
 ```
@@ -23,12 +27,13 @@ Get game events and sync to database.
 2. You will need following third-party dependencies to run the application.
 
 ```requirements.txt
-pymysql >= 1.0.2
-websockets >= 10.1
+setuptools==57.0.0
+mysql-connector-python==8.0.28
+websockets==10.1
 ```
 
 3. Use the command below to start.
 
 ```shell
-python -m update_database.py
+python -m ps2cpcdata
 ```

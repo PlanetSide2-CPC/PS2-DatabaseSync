@@ -13,7 +13,9 @@ logging.basicConfig(stream=sys.stderr, level="NOTSET")
 logger = logging.getLogger(__name__)
 
 
-class PS2CPCData(object):
+class PS2CPCData:
+    """The main class of the program."""
+
     def __init__(self):
         self.planetside = __config__["planetside2"]
         self.api = self.planetside["api"]
@@ -21,14 +23,16 @@ class PS2CPCData(object):
         self.database = database.Mysql()
 
     async def connect(self):
-        async with websockets.connect(self.api, ping_timeout=None) as ws:
-            await ws.send(self.subscription)
+        """Connect to the planetside API."""
+        async with websockets.connect(self.api, ping_timeout=None) as websocket:
+            await websocket.send(self.subscription)
             while True:
-                message = await ws.recv()
+                message = await websocket.recv()
                 data = json.loads(message)
                 await self.update_database(data)
 
     async def update_database(self, data):
+        """Update data to the database."""
         try:
             payload = data["payload"]
         except KeyError:

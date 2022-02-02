@@ -1,3 +1,4 @@
+"""Automatic Setup program."""
 from setuptools import setup
 
 from ps2cpcdata.version import __version__

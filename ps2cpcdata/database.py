@@ -8,7 +8,7 @@ from ps2cpcdata import __config__
 logger = logging.getLogger(__name__)
 
 
-class Mysql(object):
+class Mysql:
     """Mysql database operation."""
 
     def __init__(self):

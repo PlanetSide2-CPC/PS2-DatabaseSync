@@ -5,7 +5,7 @@ from ps2cpcdata.version import __version__
 setup(
     name="ps2cpcdata",
     version=__version__,
-    description="This is the first stable release of the package.",
+    description="A tool for updating data in real time for the database.",
     author="ecss11",
     maintainer="ecss11",
     url="https://github.com/PlanetSide2-CPC/PS2-DatabaseSync",

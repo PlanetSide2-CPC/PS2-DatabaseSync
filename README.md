@@ -62,7 +62,7 @@ python -m pip install .
 Use the command below to start.
 
 ```shell
-python -m ps2cpcdata
+python -m hydrogen
 ```
 
 ## Contributing

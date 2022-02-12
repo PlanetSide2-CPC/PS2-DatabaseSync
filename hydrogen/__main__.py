@@ -1,4 +1,4 @@
-"""This module implements the core developer interface for ps2cpcdata."""
+"""This module implements the core developer interface for hydrogen."""
 import asyncio
 import json
 import logging
@@ -6,8 +6,8 @@ import sys
 
 import websockets
 
-from ps2cpcdata import __config__
-from ps2cpcdata import database
+from hydrogen import __config__
+from hydrogen import database
 
 logging.basicConfig(stream=sys.stderr, level="NOTSET")
 logger = logging.getLogger(__name__)

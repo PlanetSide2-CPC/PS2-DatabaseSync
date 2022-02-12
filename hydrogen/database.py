@@ -3,7 +3,7 @@ import logging
 
 import mysql.connector
 
-from ps2cpcdata import __config__
+from hydrogen import __config__
 
 logger = logging.getLogger(__name__)
 

@@ -74,7 +74,7 @@ class Mysql(Database):
         try:
             self.cursor.execute(sql_insert)
         except pymysql.Error:
-            sql_create_key = self.seperator.join(key + ' text' for key in field.keys())
+            sql_create_key = self.seperator.join(key + ' varchar(255)' for key in field.keys())
             sql_create_table = f'CREATE TABLE {table_name} ' \
                                f'(id INT AUTO_INCREMENT, {sql_create_key}, PRIMARY KEY (id))'
             self.cursor.execute(sql_create_table)

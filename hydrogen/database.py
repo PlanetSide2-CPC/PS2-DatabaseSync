@@ -67,7 +67,7 @@ class Mysql(Database):
 
     def update(self, table_name, field):
         sql_key = self.seperator.join(key for key in field.keys())
-        sql_value = self.seperator.join(value for value in field.values())
+        sql_value = self.seperator.join('"' + value + '"' for value in field.values())
 
         sql_insert = f'INSERT INTO {table_name} ({sql_key}) VALUES ({sql_value})'
 

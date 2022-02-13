@@ -14,9 +14,11 @@ class Websocket:
     """Websocket 连接接口。"""
 
     def __init__(self):
+        self.seperator = ', '
+
         self.character = read_config('character')
-        self.events = read_config('events')
-        self.worlds = read_config('worlds')
+        self.events = self.seperator.join(read_config('events'))
+        self.worlds = self.seperator.join(read_config('worlds'))
 
         if read_config('source') == 'mysql':
             self.database = MysqlFactory().create_database()

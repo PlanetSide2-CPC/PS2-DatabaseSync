@@ -2,7 +2,7 @@
 import json
 
 
-def read_config(key=None, filename='hydrogen/config/config.json'):
+def read_config(key=None, filename='config.json'):
     """读取用户配置文件。
 
     从默认的配置文件读取配置，使用 json 的 load 载入。

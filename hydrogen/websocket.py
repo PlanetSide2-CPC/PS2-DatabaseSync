@@ -5,7 +5,7 @@ import logging
 import websockets
 
 from hydrogen.shortcuts import read_config
-from hydrogen.database import MysqlFactory
+from hydrogen.database import MysqlFactory, MongodbFactory
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,8 @@ class Websocket:
 
         if read_config('source') == 'mysql':
             self.database = MysqlFactory().create_database()
+        elif read_config('source') == 'mongodb':
+            self.database = MongodbFactory().create_database()
         else:
             raise Exception("配置文件的 source 数据库类型未存在或错误")
 

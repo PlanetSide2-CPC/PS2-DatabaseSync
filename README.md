@@ -69,21 +69,21 @@ PyMySQL==1.0.2
 }
 ```
 
-#### 强制要求
+#### 数据库
 
-**source**: 数据库类型，已支持（Mysql）。
+source: 数据库类型，已支持（Mysql, MongoDB）。
 
-**database**: 数据库的连接方式，如果使用了 Mysql 以外的数据库，请阅读此 [文档](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/wiki) 。
+database: 数据库的连接方式，请阅读此 [文档](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/wiki) 了解更多。
 
-#### 可选配置
+#### 订阅事件
 
-**service**: 服务 ID，从此 [网页](http://census.daybreakgames.com/) 申请新的 API 链接。
+service: 服务 ID，从此 [网页](http://census.daybreakgames.com/) 申请新的 API 链接。
 
-**events**: 希望订阅的事件，可选 [事件](http://census.daybreakgames.com/#ps2-websocket-examples) 文档。
+events: 希望订阅的事件，可选 [事件](http://census.daybreakgames.com/#ps2-websocket-examples) 文档。
 
-**worlds**: 服务器 ID，暂无对应说明。
+worlds: 服务器 ID，暂无对应说明。
 
-**character**: 订阅的玩家，默认 "all" 所有，可使用特定玩家 ID。
+character: 订阅的玩家，默认 "all" 所有，可使用特定玩家 ID。
 
 ### 安装程序
 

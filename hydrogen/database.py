@@ -1,13 +1,10 @@
 """此模块实现了包的核心功能。"""
-import logging
 from abc import ABCMeta, abstractmethod
 
 import pymysql
 import pymongo
 
 from hydrogen.shortcuts import read_config
-
-logger = logging.getLogger(__name__)
 
 
 class Database(metaclass=ABCMeta):

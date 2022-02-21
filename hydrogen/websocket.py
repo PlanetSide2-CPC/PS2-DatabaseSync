@@ -1,13 +1,12 @@
 """Websocket 连接模块。"""
 import json
-import logging
 
 import websockets
 
+from loguru import logger
+
 from hydrogen.shortcuts import read_config
 from hydrogen.database import MysqlFactory, MongodbFactory
-
-logger = logging.getLogger(__name__)
 
 
 class Websocket:
@@ -45,6 +44,7 @@ class Websocket:
         Returns: None
 
         """
+        logger.info("连接已建立，请求订阅数据")
         subscription = '{' + f'"service":"event","action":"subscribe",' \
                              f'"characters":[{self.character}],"eventNames":[{self.events}],' \
                              f'"worlds":[{self.worlds}],"logicalAndCharactersWithWorlds":true' + '}'

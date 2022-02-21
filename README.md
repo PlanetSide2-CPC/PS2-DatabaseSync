@@ -42,6 +42,8 @@ pip install -r requirements.txt
 setuptools==60.9.0
 websockets==10.1
 PyMySQL==1.0.2
+pymongo==4.0.1
+loguru==0.6.0
 ```
 
 ### 配置文件

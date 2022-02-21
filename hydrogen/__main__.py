@@ -23,5 +23,4 @@ while True:
         continue
 
     except OSError as exception:
-        logger.warning(exception)
         continue

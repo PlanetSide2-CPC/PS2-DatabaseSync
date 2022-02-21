@@ -33,7 +33,7 @@ class Websocket:
 
     async def connect(self):
         """连接到行星边际 API。"""
-        async with websockets.connect(read_config('service')) as websocket:
+        async with websockets.connect(read_config('service'), ping_timeout=None) as websocket:
             await self.on_connect(websocket)
 
     async def on_connect(self, connect):

@@ -89,6 +89,10 @@ character: 订阅的玩家，默认 "all" 所有，可使用特定玩家 ID。
 
 ### 安装程序
 
+从 [Release](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/releases) 下载一个最新的稳定版本，或选择 alpha 或 beta 版本。
+
+> Alpha 和 Beta 版本通常可能存在未修复的问题，因此不建议在生产环境中使用。
+
 在 `setup.py` 的目录中执行：
 
 ```shell

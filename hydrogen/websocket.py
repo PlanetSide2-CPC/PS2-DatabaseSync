@@ -20,6 +20,7 @@ class Websocket:
         self.events = self.seperator.join(read_config('events'))
         self.worlds = self.seperator.join(read_config('worlds'))
 
+        # 添加工厂实例化
         if read_config('source') == 'mysql':
             self.database = MysqlFactory().create_database()
         elif read_config('source') == 'mongodb':

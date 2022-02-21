@@ -19,3 +19,7 @@ while True:
     except WebSocketException:
         logger.warning("连接失败，正在尝试重新连接。")
         continue
+
+    except asyncio.TimeoutError:
+        logger.warning("异步 IO 超时，正在尝试重新连接")
+        continue

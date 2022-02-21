@@ -53,8 +53,19 @@ class Websocket:
             message = await connect.recv()
             loads_message = json.loads(message)
 
-            if 'serviceMessage' not in loads_message.values():
-                continue
+            await self.is_service_message(loads_message)
 
+    async def is_service_message(self, loads_message):
+        """是否是订阅的服务信息。
+
+        如果是订阅事件，则提交信息至数据库。
+
+        Args:
+            loads_message (dict): 返回信息
+
+        Returns: None
+
+        """
+        if 'serviceMessage' in loads_message.values():
             payload = loads_message.get('payload')
             self.database.update(payload.get('event_name'), payload)

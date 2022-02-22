@@ -1,13 +1,12 @@
 """Websocket 连接模块。"""
 import json
-import logging
 
 import websockets
 
-from hydrogen.shortcuts import read_config
-from hydrogen.database import MysqlFactory
+from loguru import logger
 
-logger = logging.getLogger(__name__)
+from hydrogen.shortcuts import read_config
+from hydrogen.database import MysqlFactory, MongodbFactory
 
 
 class Websocket:
@@ -20,8 +19,11 @@ class Websocket:
         self.events = self.seperator.join(read_config('events'))
         self.worlds = self.seperator.join(read_config('worlds'))
 
+        # 添加工厂实例化
         if read_config('source') == 'mysql':
             self.database = MysqlFactory().create_database()
+        elif read_config('source') == 'mongodb':
+            self.database = MongodbFactory().create_database()
         else:
             raise Exception("配置文件的 source 数据库类型未存在或错误")
 
@@ -30,7 +32,7 @@ class Websocket:
 
     async def connect(self):
         """连接到行星边际 API。"""
-        async with websockets.connect(read_config('service')) as websocket:
+        async with websockets.connect(read_config('service'), ping_timeout=None) as websocket:
             await self.on_connect(websocket)
 
     async def on_connect(self, connect):
@@ -42,6 +44,7 @@ class Websocket:
         Returns: None
 
         """
+        logger.info("连接已建立，请求订阅数据")
         subscription = '{' + f'"service":"event","action":"subscribe",' \
                              f'"characters":[{self.character}],"eventNames":[{self.events}],' \
                              f'"worlds":[{self.worlds}],"logicalAndCharactersWithWorlds":true' + '}'
@@ -50,8 +53,19 @@ class Websocket:
             message = await connect.recv()
             loads_message = json.loads(message)
 
-            if 'serviceMessage' not in loads_message.values():
-                continue
+            await self.is_service_message(loads_message)
 
+    async def is_service_message(self, loads_message):
+        """是否是订阅的服务信息。
+
+        如果是订阅事件，则提交信息至数据库。
+
+        Args:
+            loads_message (dict): 返回信息
+
+        Returns: None
+
+        """
+        if 'serviceMessage' in loads_message.values():
             payload = loads_message.get('payload')
             self.database.update(payload.get('event_name'), payload)

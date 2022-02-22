@@ -42,6 +42,8 @@ pip install -r requirements.txt
 setuptools==60.9.0
 websockets==10.1
 PyMySQL==1.0.2
+pymongo==4.0.1
+loguru==0.6.0
 ```
 
 ### 配置文件
@@ -69,23 +71,27 @@ PyMySQL==1.0.2
 }
 ```
 
-#### 强制要求
+#### 数据库
 
-**source**: 数据库类型，已支持（Mysql）。
+source: 数据库类型，已支持（Mysql, MongoDB）。
 
-**database**: 数据库的连接方式，如果使用了 Mysql 以外的数据库，请阅读此 [文档](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/wiki) 。
+database: 数据库的连接方式，请阅读此 [文档](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/wiki) 了解更多。
 
-#### 可选配置
+#### 订阅事件
 
-**service**: 服务 ID，从此 [网页](http://census.daybreakgames.com/) 申请新的 API 链接。
+service: 服务 ID，从此 [网页](http://census.daybreakgames.com/) 申请新的 API 链接。
 
-**events**: 希望订阅的事件，可选 [事件](http://census.daybreakgames.com/#ps2-websocket-examples) 文档。
+events: 希望订阅的事件，可选 [事件](http://census.daybreakgames.com/#ps2-websocket-examples) 文档。
 
-**worlds**: 服务器 ID，暂无对应说明。
+worlds: 服务器 ID，暂无对应说明。
 
-**character**: 订阅的玩家，默认 "all" 所有，可使用特定玩家 ID。
+character: 订阅的玩家，默认 "all" 所有，可使用特定玩家 ID。
 
 ### 安装程序
+
+从 [Release](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/releases) 下载一个最新的稳定版本，或选择 alpha 或 beta 版本。
+
+> Alpha 和 Beta 版本通常可能存在未修复的问题，因此不建议在生产环境中使用。
 
 在 `setup.py` 的目录中执行：
 

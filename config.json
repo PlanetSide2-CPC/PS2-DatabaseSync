@@ -1,11 +1,11 @@
 {
-  "source": "mysql",
+  "source": "mongodb",
   "database": {
     "host": "localhost",
-    "port": 3306,
+    "port": 27017,
     "database": "hydrogen",
-    "user": "root",
-    "password": "123.com"
+    "user": "",
+    "password": ""
   },
   "service": "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:yinxue",
   "events": [

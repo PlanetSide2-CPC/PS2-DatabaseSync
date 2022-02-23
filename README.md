@@ -48,7 +48,7 @@ loguru==0.6.0
 
 ### 配置文件
 
-修改你的 `config.json` 文件:
+修改你的 `config.json` 文件（**Mysql** 为例）:
 
 ```json
 {
@@ -75,7 +75,7 @@ loguru==0.6.0
 
 source: 数据库类型，已支持（Mysql, MongoDB）。
 
-database: 数据库的连接方式，请阅读此 [文档](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/wiki) 了解更多。
+database: 数据库的连接方式，其他数据库请阅读此 [文档](https://github.com/PlanetSide2-CPC/PS2-DatabaseSync/wiki) 了解更多。
 
 #### 订阅事件
 

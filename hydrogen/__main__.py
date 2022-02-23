@@ -1,8 +1,8 @@
 """应用的高层实现代码。"""
 import asyncio
 
-from websockets.exceptions import WebSocketException
 from loguru import logger
+from websockets.exceptions import WebSocketException
 
 from hydrogen.websocket import Websocket
 
@@ -20,7 +20,4 @@ while True:
 
     except asyncio.TimeoutError:
         logger.warning("异步 IO 超时，尝试重新连接")
-        continue
-
-    except OSError as exception:
         continue

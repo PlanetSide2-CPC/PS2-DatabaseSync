@@ -21,9 +21,6 @@ class Websocket:
         self.database = DATABASE_FACTORY[read_config('source')]
         self.database.connect()
 
-    def __repr__(self):
-        return "API 连接实例初始化成功"
-
     async def connect(self):
         """连接到行星边际 API。"""
         async with websockets.connect(read_config('service'), ping_timeout=None) as websocket:
@@ -38,7 +35,7 @@ class Websocket:
         Returns: None
 
         """
-        logger.info("连接已建立，请求订阅数据")
+        logger.info(f"{read_config('source')} 连接已建立，请求订阅数据 ({self.events}) 在服务器 ({self.worlds})。")
         subscription = '{' + f'"service":"event","action":"subscribe",' \
                              f'"characters":[{self.character}],"eventNames":[{self.events}],' \
                              f'"worlds":[{self.worlds}],"logicalAndCharactersWithWorlds":true' + '}'

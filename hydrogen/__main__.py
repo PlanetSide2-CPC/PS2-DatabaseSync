@@ -19,5 +19,5 @@ while True:
         continue
 
     except asyncio.TimeoutError:
-        logger.warning("异步 IO 超时，尝试重新连接")
+        logger.warning("异步 IO 超时，尝试重新连接。")
         continue

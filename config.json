@@ -1,11 +1,8 @@
 {
   "source": "mongodb",
   "database": {
-    "host": "localhost",
-    "port": 27017,
-    "database": "hydrogen",
-    "user": "",
-    "password": ""
+    "url": "mongodb://localhost:27017",
+    "database": "hydrogen"
   },
   "service": "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:yinxue",
   "events": [

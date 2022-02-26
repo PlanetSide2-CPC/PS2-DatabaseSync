@@ -2,11 +2,10 @@
 import json
 
 import websockets
-
 from loguru import logger
 
+from hydrogen.database import DATABASE_FACTORY
 from hydrogen.shortcuts import read_config
-from hydrogen.database import MysqlFactory, MongodbFactory
 
 
 class Websocket:
@@ -19,16 +18,8 @@ class Websocket:
         self.events = self.seperator.join(read_config('events'))
         self.worlds = self.seperator.join(read_config('worlds'))
 
-        # 添加工厂实例化
-        if read_config('source') == 'mysql':
-            self.database = MysqlFactory().create_database()
-        elif read_config('source') == 'mongodb':
-            self.database = MongodbFactory().create_database()
-        else:
-            raise Exception("配置文件的 source 数据库类型未存在或错误")
-
-    def __repr__(self):
-        return "API 连接实例初始化成功"
+        self.database = DATABASE_FACTORY[read_config('source')]
+        self.database.connect()
 
     async def connect(self):
         """连接到行星边际 API。"""
@@ -44,7 +35,7 @@ class Websocket:
         Returns: None
 
         """
-        logger.info("连接已建立，请求订阅数据")
+        logger.info(f"{read_config('source')} 连接已建立，请求订阅数据 ({self.events}) 在服务器 ({self.worlds})。")
         subscription = '{' + f'"service":"event","action":"subscribe",' \
                              f'"characters":[{self.character}],"eventNames":[{self.events}],' \
                              f'"worlds":[{self.worlds}],"logicalAndCharactersWithWorlds":true' + '}'
@@ -68,4 +59,4 @@ class Websocket:
         """
         if 'serviceMessage' in loads_message.values():
             payload = loads_message.get('payload')
-            self.database.update(payload.get('event_name'), payload)
+            await self.database.update(payload.get('event_name'), payload)
